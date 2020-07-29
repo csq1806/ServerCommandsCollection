@@ -1,0 +1,12 @@
+# Windows Generated Files
+ehthumbs.db
+Thumbs.db
+
+# Visual Studio Paths and Files
+packages/
+bin/
+obj/
+*.suo
+*.csproj.user
+.nuget/
+.vs/

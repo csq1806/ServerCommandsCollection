@@ -1,0 +1,20 @@
+<div class="home-main-outter">
+    <div class="home-main">
+        <div class="home-header">服务器配置</div>
+        <div class="home-item">
+            <label for='server'>服务器</label>
+            <input id='server' type="text" [(ngModel)]="server">
+        </div>
+        <div class="home-item">
+            <label for="vpn_name">VPN</label>
+            <input id="vpn_name" type="text" [(ngModel)]="vpnName">
+        </div>
+        <div class="home-buttons">
+            <button (click)='connectToVPN()'>连接VPN</button>
+            <button (click)='disconnectToVPN()'>断开VPN</button>
+        </div>
+    </div>
+    <div class="login_loading" #loadingMask>
+        <img src="assets/loading.gif" width="120px" height="120px">
+    </div>
+</div>
