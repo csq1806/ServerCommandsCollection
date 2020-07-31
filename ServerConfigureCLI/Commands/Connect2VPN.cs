@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ServerConfigureCLI.Commands
 {
-	class VPNSSTP : ICommand
+	class Connect2VPN : ICommand
 	{
 		public void AddCommand<T>(CommandLineApplication<T> app) where T : class
 		{
@@ -21,7 +21,7 @@ namespace ServerConfigureCLI.Commands
 
 				 var type = config.Option("--disconnect", string.Empty, CommandOptionType.NoValue);
 
-				 var vpnType = config.Option("--sstp", string.Empty, CommandOptionType.SingleValue);
+				 var vpnName = config.Option("-name", string.Empty, CommandOptionType.SingleValue);
 				 var userName = config.Option("-un", string.Empty, CommandOptionType.SingleValue);
 				 var password = config.Option("-pw", string.Empty, CommandOptionType.SingleValue);
 				 config.OnExecuteAsync(async token =>
@@ -32,7 +32,7 @@ namespace ServerConfigureCLI.Commands
 						 return 501;
 					 }
 					 if (type.HasValue()) return ExecuteDisconnectVPN(dns, networkName);
-					 return ExecuteConnectVPN(dns, networkName, vpnType, userName, password);
+					 return ExecuteConnectVPN(dns, networkName, vpnName, userName, password);
 
 				 });
 			 });
@@ -49,11 +49,11 @@ namespace ServerConfigureCLI.Commands
 			}
 		}
 
-		private int ExecuteConnectVPN(CommandOption dns, CommandOption networkName, CommandOption vpnType, CommandOption userName, CommandOption password)
+		private int ExecuteConnectVPN(CommandOption dns, CommandOption networkName, CommandOption vpnName, CommandOption userName, CommandOption password)
 		{
-			if (string.IsNullOrWhiteSpace(vpnType.Value()))
+			if (string.IsNullOrWhiteSpace(vpnName.Value()))
 			{
-				Console.WriteLine("Need VPN name for SSTP");
+				Console.WriteLine("Need VPN name");
 				return 500;
 			}
 
@@ -62,7 +62,7 @@ namespace ServerConfigureCLI.Commands
 				CreateNoWindow = false,
 				UseShellExecute = false,
 				WindowStyle = ProcessWindowStyle.Hidden,
-				Arguments = $"\"{vpnType.Value()}\" {userName.Value()} {password.Value()}",
+				Arguments = $"\"{vpnName.Value()}\" {userName.Value()} {password.Value()}",
 				FileName = "rasdial.exe"
 			};
 			using (Process process = Process.Start(startInfo))
@@ -74,7 +74,7 @@ namespace ServerConfigureCLI.Commands
 			}
 		}
 
-		
+
 
 		public static NetworkInterface GetActiveEthernetOrWifiNetworkInterface(string networkName)
 		{

@@ -15,7 +15,7 @@ namespace ServerConfigureCLI
 		async static Task Main(string[] args)
 		{
 			var Container = new UnityContainer();
-			Container.RegisterType<ICommand, VPNSSTP>();
+			Container.RegisterType<ICommand, Connect2VPN>();
 
 			var app = new CommandLineApplication<Program>();
 

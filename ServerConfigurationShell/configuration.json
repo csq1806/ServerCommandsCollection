@@ -1,0 +1,16 @@
+[
+  {
+    "Name": "VPN Japan",
+    "UserName": "JeffreyChen",
+    "Password": "PeCCr68yu0o9KjTN+FsSPw==",
+    "NetworkName": "Ethernet",
+    "DNS": "8.8.8.8"
+  },
+  {
+    "Name": "VPN Japan SSTP",
+    "UserName": "JeffreyChen",
+    "Password": "PeCCr68yu0o9KjTN+FsSPw==",
+    "NetworkName": "Local Area Connection",
+    "DNS": "8.8.8.8"
+  }
+]

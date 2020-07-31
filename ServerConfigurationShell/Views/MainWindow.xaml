@@ -1,0 +1,50 @@
+﻿<Window x:Class="ServerConfigurationShell.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"  
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converter="clr-namespace:ServerConfigurationShell.Converters"
+        ResizeMode="CanMinimize"
+        Title="VPN" Height="320" Width="400">
+    <Window.Resources>
+        <converter:Bool2ColorConverter x:Key="Bool2ColorConverter"/>
+    </Window.Resources>
+    <telerik:RadBusyIndicator IsBusy="{Binding IsBusy}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <telerik:RadToolBar HorizontalAlignment="Stretch" IsOverflowOpen="False"  Margin="-1 -2 -1 0">
+                <telerik:RadButton Margin="2" Command="{Binding ConnectCommand}" ToolTip="Connect">
+                    <Image Source="/ServerConfigurationShell;component/assets/connect.png" Width="16"></Image>
+                </telerik:RadButton>
+                <telerik:RadButton Margin="2" Command="{Binding DisconnectCommand}" ToolTip="Disconnect">
+                    <Image Source="/ServerConfigurationShell;component/assets/disconnect.png" Width="16"></Image>
+                </telerik:RadButton>
+                <telerik:RadToolBarSeparator />
+                <telerik:RadButton Margin="2" Command="{Binding AddConfigurationCommand}" ToolTip="Configure">
+                    <Image Source="/ServerConfigurationShell;component/assets/configuration.png" Width="16"></Image>
+                </telerik:RadButton>
+            </telerik:RadToolBar>
+            <telerik:RadGridView Grid.Row="1" ActionOnLostFocus="None" CanUserDeleteRows="False" CanUserFreezeColumns="False" IsReadOnly="True" ShowGroupPanel="False" IsFilteringAllowed="False" RowIndicatorVisibility="Collapsed" CanUserResizeColumns="True" GroupRenderMode="Flat" AutoGenerateColumns="False" BorderThickness="0" ItemsSource="{Binding VPNConfigurations}" SelectedItem="{Binding SelectedConfiguration}">
+                <telerik:RadGridView.Columns>
+                    <telerik:GridViewColumn>
+                        <telerik:GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="Black" Margin="5" BorderThickness="1" Width="12" CornerRadius="6" Background="{Binding IsConnected,Converter={StaticResource Bool2ColorConverter}}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="12"></Border>
+                            </DataTemplate>
+                        </telerik:GridViewColumn.CellTemplate>
+                    </telerik:GridViewColumn>
+                    <telerik:GridViewDataColumn Header="VPN Name" DataMemberBinding="{Binding Name}"></telerik:GridViewDataColumn>
+                    <telerik:GridViewDataColumn Header="User Name" DataMemberBinding="{Binding UserName}"></telerik:GridViewDataColumn>
+                    <telerik:GridViewDataColumn Header="Network Name" DataMemberBinding="{Binding NetworkName}" Width="*"></telerik:GridViewDataColumn>
+                    <telerik:GridViewDataColumn Header="DNS" DataMemberBinding="{Binding DNS}" Width="80"></telerik:GridViewDataColumn>
+                </telerik:RadGridView.Columns>
+            </telerik:RadGridView>
+        </Grid>
+
+    </telerik:RadBusyIndicator>
+
+</Window>
