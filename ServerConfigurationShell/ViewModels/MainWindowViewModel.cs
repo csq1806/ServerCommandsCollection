@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -32,6 +34,35 @@ namespace ServerConfigurationShell.ViewModels
 			AddConfigurationCommand = new DelegateCommand(OnAddConfigurationCommand);
 
 			EventAggregator.GetEvent<AddConfigurationEvent>().Subscribe(OnAddingConfiguration);
+
+			Task.Run(MonitorVPNStatus);
+		}
+
+		private void MonitorVPNStatus()
+		{
+			while (true)
+			{
+				try
+				{
+					if (VPNConfigurations != null)
+					{
+						var nics = NetworkInterface.GetAllNetworkInterfaces();
+						var config = VPNConfigurations.FirstOrDefault(p => nics.Any(pp =>
+						{
+							return pp.Name == p.Name;
+						}));
+						if (config != null && config.IsConnected) continue;
+
+						VPNConfigurations.ForEach(p => p.IsConnected = false);
+						if (config != null) config.IsConnected = true;
+					}
+				}
+				catch (Exception)
+				{
+					VPNConfigurations.ForEach(p => p.IsConnected = false);
+				}
+				Thread.Sleep(3000);
+			}
 		}
 
 		private void OnAddingConfiguration(Configuration obj)
@@ -72,7 +103,7 @@ namespace ServerConfigurationShell.ViewModels
 				{
 					process.WaitForExit();
 					IsBusy = false;
-					if (process.ExitCode == 0) SelectedConfiguration.IsConnected = false;
+					//if (process.ExitCode == 0) SelectedConfiguration.IsConnected = false;
 				}
 			});
 		}
@@ -97,7 +128,7 @@ namespace ServerConfigurationShell.ViewModels
 				{
 					process.WaitForExit();
 					IsBusy = false;
-					if (process.ExitCode == 0) SelectedConfiguration.IsConnected = true; ;
+					//if (process.ExitCode == 0) SelectedConfiguration.IsConnected = true; ;
 				}
 			});
 		}

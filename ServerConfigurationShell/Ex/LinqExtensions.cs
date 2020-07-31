@@ -18,5 +18,11 @@ namespace ServerConfigurationShell
 		{
 			return new HashSet<T>(_LinqResult);
 		}
+
+		public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
+		{
+			foreach (T element in source)
+				action(element);
+		}
 	}
 }
