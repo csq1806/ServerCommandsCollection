@@ -35,7 +35,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>vpn.ico</ApplicationIcon>
+    <ApplicationIcon>ServerConfig.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -118,6 +118,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="vpn.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="ServerConfig.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
