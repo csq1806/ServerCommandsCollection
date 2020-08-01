@@ -51,7 +51,11 @@ namespace ServerConfigurationShell.ViewModels
 						{
 							return pp.Name == p.Name;
 						}));
-						if (config != null && config.IsConnected) continue;
+						if (config != null && config.IsConnected)
+						{
+							Thread.Sleep(3000);
+							continue;
+						}
 
 						VPNConfigurations.ForEach(p => p.IsConnected = false);
 						if (config != null) config.IsConnected = true;
