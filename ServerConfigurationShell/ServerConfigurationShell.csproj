@@ -127,12 +127,14 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converters\Bool2ColorConverter.cs" />
+    <Compile Include="Converters\Bool2SonicImageConverter.cs" />
     <Compile Include="Environment.cs" />
     <Compile Include="Events\AddConfigurationEvent.cs" />
     <Compile Include="Ex\LinqExtensions.cs" />
     <Compile Include="ModelBase.cs" />
     <Compile Include="Security.cs" />
     <Compile Include="Services\IService.cs" />
+    <Compile Include="Templates\ConnectedStatusTemplateSelector.cs" />
     <Compile Include="ViewModelBase.cs" />
     <Compile Include="ViewModels\ConfigurationViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
@@ -199,6 +201,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\disconnect.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\sonic.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\sonic-disconnect.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

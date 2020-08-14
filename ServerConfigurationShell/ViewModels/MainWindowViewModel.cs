@@ -85,7 +85,20 @@ namespace ServerConfigurationShell.ViewModels
 		{
 			await environment.Initialize();
 			VPNConfigurations = environment.VPNConfigurations?.ToObservableCollection() ?? new ObservableCollection<Configuration>();
+			if (environment.SonicVPNEnabled) AddSonicWall2VPNConfigurations();
 			if (VPNConfigurations.Count > 0) SelectedConfiguration = VPNConfigurations.First();
+		}
+
+		private void AddSonicWall2VPNConfigurations()
+		{
+			VPNConfigurations.Add(new Configuration
+			{
+				IsConnected = false,
+				Name = "Transfinder VPN",
+				UserName = "jeffrey.chen",
+				Password = "Qohlj81102",
+				IsSonicWallVPN = true
+			});
 		}
 
 		private void OnDisconnectCommand()
@@ -93,6 +106,13 @@ namespace ServerConfigurationShell.ViewModels
 			IsBusy = true;
 			Task.Run(() =>
 			{
+				if (SelectedConfiguration.IsSonicWallVPN)
+				{
+					Disconnect2SonicWallVPN();
+					IsBusy = false;
+					return;
+				}
+
 				string args = "vpn --disconnect ";
 				if (!string.IsNullOrWhiteSpace(SelectedConfiguration.NetworkName)) args += $"--dns -net \"{SelectedConfiguration.NetworkName}\"";
 				var startInfo = new ProcessStartInfo
@@ -106,10 +126,28 @@ namespace ServerConfigurationShell.ViewModels
 				using (Process process = Process.Start(startInfo))
 				{
 					process.WaitForExit();
-					IsBusy = false;
 					//if (process.ExitCode == 0) SelectedConfiguration.IsConnected = false;
 				}
+				IsBusy = false;
 			});
+		}
+
+		private void Disconnect2SonicWallVPN()
+		{
+			var startInfo = new ProcessStartInfo
+			{
+				CreateNoWindow = false,
+				UseShellExecute = false,
+				WorkingDirectory = @"C:\Program Files\Dell SonicWALL\Global VPN Client",
+				WindowStyle = ProcessWindowStyle.Hidden,
+				Arguments = $"/C swgvc /D \"{SelectedConfiguration.Name}\"",
+				FileName = "cmd.exe"
+			};
+			using (Process process = Process.Start(startInfo))
+			{
+				process.WaitForExit();
+				IsBusy = false;
+			}
 		}
 
 		private void OnConnectCommand()
@@ -117,6 +155,13 @@ namespace ServerConfigurationShell.ViewModels
 			IsBusy = true;
 			Task.Run(() =>
 			{
+				if (SelectedConfiguration.IsSonicWallVPN)
+				{
+					Connect2SonicWallVPN();
+					IsBusy = false;
+					return;
+				}
+
 				string args = $"vpn -name \"{SelectedConfiguration.Name}\" -un \"{SelectedConfiguration.UserName}\" -pw \"{Security.Decrypt(SelectedConfiguration.Password)}\" ";
 				if (!string.IsNullOrWhiteSpace(SelectedConfiguration.DNS) && !string.IsNullOrWhiteSpace(SelectedConfiguration.NetworkName))
 					args += $"--dns:\"{SelectedConfiguration.DNS}\" -net \"{SelectedConfiguration.NetworkName}\"";
@@ -131,12 +176,28 @@ namespace ServerConfigurationShell.ViewModels
 				using (Process process = Process.Start(startInfo))
 				{
 					process.WaitForExit();
-					IsBusy = false;
-					//if (process.ExitCode == 0) SelectedConfiguration.IsConnected = true; ;
 				}
+
+				IsBusy = false;
 			});
 		}
 
+		private void Connect2SonicWallVPN()
+		{
+			var startInfo = new ProcessStartInfo
+			{
+				CreateNoWindow = false,
+				UseShellExecute = false,
+				WorkingDirectory = @"C:\Program Files\Dell SonicWALL\Global VPN Client",
+				WindowStyle = ProcessWindowStyle.Hidden,
+				Arguments = $"/C swgvc /E \"{SelectedConfiguration.Name}\" /U {SelectedConfiguration.UserName} /P {SelectedConfiguration.Password}",
+				FileName = "cmd.exe"
+			};
+			using (Process process = Process.Start(startInfo))
+			{
+				process.WaitForExit();
+			}
+		}
 
 		public ICommand ConnectCommand { get; set; }
 		public ICommand DisconnectCommand { get; set; }

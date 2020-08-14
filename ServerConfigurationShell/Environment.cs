@@ -2,6 +2,7 @@
 using Prism.Events;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -14,7 +15,7 @@ namespace ServerConfigurationShell
 	{
 		public Environment()
 		{
-
+			SonicVPNEnabled = bool.Parse(ConfigurationManager.AppSettings["SonicVPNEnabled"] ?? "false");
 		}
 
 		async public Task Initialize()
@@ -33,6 +34,8 @@ namespace ServerConfigurationShell
 		}
 
 		public List<Configuration> VPNConfigurations { get; set; }
+
+		public bool SonicVPNEnabled { get; set; }
 
 		async public Task Save()
 		{
@@ -57,7 +60,7 @@ namespace ServerConfigurationShell
 		public string Password { get; set; }
 		public string NetworkName { get; set; }
 		public string DNS { get; set; }
-		
+
 		[JsonIgnore]
 		private bool isConnected;
 		[JsonIgnore]
@@ -70,6 +73,8 @@ namespace ServerConfigurationShell
 				OnPropertyChanged();
 			}
 		}
+		[JsonIgnore]
+		public bool IsSonicWallVPN { get; set; }
 
 	}
 }

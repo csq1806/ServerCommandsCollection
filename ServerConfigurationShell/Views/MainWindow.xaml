@@ -5,10 +5,19 @@
         xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"  
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:converter="clr-namespace:ServerConfigurationShell.Converters"
+        xmlns:temp="clr-namespace:ServerConfigurationShell.Templates"
         ResizeMode="CanMinimize"
         Title="VPN" Height="320" Width="400">
     <Window.Resources>
         <converter:Bool2ColorConverter x:Key="Bool2ColorConverter"/>
+        <converter:Bool2SonicImageConverter x:Key="Bool2SonicImageConverter"/>
+        <DataTemplate x:Key="NormalContentTemplate">
+            <Border BorderBrush="Black" Margin="5" BorderThickness="1" Width="12" CornerRadius="6" Background="{Binding IsConnected,Converter={StaticResource Bool2ColorConverter}}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="12"></Border>
+        </DataTemplate>
+        <DataTemplate x:Key="SonicContentTemplate">
+            <Image Source="{Binding IsConnected,Converter={StaticResource Bool2SonicImageConverter}}" HorizontalAlignment="Center" VerticalAlignment="Center" Width="18"></Image>
+        </DataTemplate>
+        <temp:ConnectedStatusTemplateSelector x:Key="ConnectedStatusTemplateSelector" NormalContentTemplate="{StaticResource NormalContentTemplate}" SonicContentTemplate="{StaticResource SonicContentTemplate}"></temp:ConnectedStatusTemplateSelector>
     </Window.Resources>
     <telerik:RadBusyIndicator IsBusy="{Binding IsBusy}">
         <Grid>
@@ -33,7 +42,8 @@
                     <telerik:GridViewColumn>
                         <telerik:GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Border BorderBrush="Black" Margin="5" BorderThickness="1" Width="12" CornerRadius="6" Background="{Binding IsConnected,Converter={StaticResource Bool2ColorConverter}}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="12"></Border>
+                                <ContentControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Content="{Binding}"
+                                                ContentTemplateSelector="{StaticResource ConnectedStatusTemplateSelector}"></ContentControl>
                             </DataTemplate>
                         </telerik:GridViewColumn.CellTemplate>
                     </telerik:GridViewColumn>
