@@ -11,13 +11,22 @@ namespace ServerConfigurationShell.Templates
 	class ConnectedStatusTemplateSelector : DataTemplateSelector
 	{
 		public DataTemplate SonicContentTemplate { get; set; }
-		public DataTemplate NormalContentTemplate { get; set; }
+		public DataTemplate VPNContentTemplate { get; set; }
+		public DataTemplate RDPContentTemplate { get; set; }
 		public override DataTemplate SelectTemplate(object item, DependencyObject container)
 		{
 			if (item == null) return null;
 			Configuration configuration = item as Configuration;
-			if (configuration.IsSonicWallVPN) return SonicContentTemplate;
-			else return NormalContentTemplate;
+			switch (configuration.Type)
+			{
+				case ConfigurationType.Remote:
+					return RDPContentTemplate;
+				case ConfigurationType.VPN:
+					return VPNContentTemplate;
+				case ConfigurationType.SonicWallVPN:
+					return SonicContentTemplate;
+				default: return null;
+			}
 		}
 	}
 }

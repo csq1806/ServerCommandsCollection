@@ -28,12 +28,12 @@ namespace ServerConfigurationShell
 					byte[] buffer = new byte[fs.Length];
 					await fs.ReadAsync(buffer, 0, (int)fs.Length);
 					string json = Encoding.UTF8.GetString(buffer);
-					VPNConfigurations = JsonConvert.DeserializeObject<List<Configuration>>(json);
+					Configurations = JsonConvert.DeserializeObject<List<Configuration>>(json);
 				}
 			});
 		}
 
-		public List<Configuration> VPNConfigurations { get; set; }
+		public List<Configuration> Configurations { get; set; }
 
 		public bool SonicVPNEnabled { get; set; }
 
@@ -45,7 +45,7 @@ namespace ServerConfigurationShell
 				if (File.Exists(filePath)) File.Delete(filePath);
 				using (FileStream fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
 				{
-					var json = JsonConvert.SerializeObject(VPNConfigurations);
+					var json = JsonConvert.SerializeObject(Configurations);
 					byte[] buffer = Encoding.UTF8.GetBytes(json);
 					await fs.WriteAsync(buffer, 0, (int)buffer.Length);
 				}
@@ -56,10 +56,13 @@ namespace ServerConfigurationShell
 	public class Configuration : ModelBase
 	{
 		public string Name { get; set; }
+		public string IPAddress { get; set; }
+		public string PresharedKey { get; set; }
 		public string UserName { get; set; }
 		public string Password { get; set; }
 		public string NetworkName { get; set; }
 		public string DNS { get; set; }
+		public string Domain { get; set; }
 
 		[JsonIgnore]
 		private bool isConnected;
@@ -73,8 +76,15 @@ namespace ServerConfigurationShell
 				OnPropertyChanged();
 			}
 		}
-		[JsonIgnore]
-		public bool IsSonicWallVPN { get; set; }
+		public ConfigurationType Type { get; set; }
+		public string AssociatedVPNName { get; set; }
 
+	}
+
+	public enum ConfigurationType
+	{
+		Remote,
+		VPN,
+		SonicWallVPN
 	}
 }

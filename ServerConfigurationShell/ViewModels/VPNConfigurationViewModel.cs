@@ -2,6 +2,7 @@
 using ServerConfigurationShell.Events;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,11 +12,11 @@ using Unity;
 
 namespace ServerConfigurationShell.ViewModels
 {
-	public class ConfigurationViewModel : ViewModelBase
+	public class VPNConfigurationViewModel : ViewModelBase
 	{
 		private Environment environment;
-		public ConfigurationViewModel(
-			ServerConfigurationShell.Views.Configuration view,
+		public VPNConfigurationViewModel(
+			ServerConfigurationShell.Views.VPNConfiguration view,
 			IUnityContainer container,
 			Environment environment) :
 			base(view, container)
@@ -40,13 +41,48 @@ namespace ServerConfigurationShell.ViewModels
 			var config = new Configuration
 			{
 				DNS = DNS,
+				IPAddress = IPAddress,
+				PresharedKey = PresharedKey,
 				Name = VPNName,
 				NetworkName = NetworkName,
 				Password = Security.Encrypt(Password),
 				UserName = UserName,
+				Type = IsSonicVPN ? ConfigurationType.SonicWallVPN : ConfigurationType.VPN
 			};
+
+			if (config.Type == ConfigurationType.SonicWallVPN)
+			{
+				if (!NetworkHelper.IsNetworkExist(config.Name))
+				{
+					Telerik.Windows.Controls.RadWindow.Alert("Please install SonicWall VPN Client.");
+				}
+			}
+			else
+			{
+				var startInfo = new ProcessStartInfo
+				{
+					CreateNoWindow = false,
+					UseShellExecute = false,
+					WindowStyle = ProcessWindowStyle.Hidden,
+					Arguments = $"cvpn -l2tp -name \"{config.Name}\" -ip \"{config.IPAddress}\" " +
+						$"-prekey \"{config.PresharedKey}\" -un:\"{config.UserName}\" " +
+						$"-pw:\"{Security.Decrypt(config.Password)}\"",
+					FileName = @"CLI\sc.exe"
+				};
+				using (Process process = Process.Start(startInfo))
+				{
+					process.WaitForExit();
+					if (process.ExitCode != 0)
+					{
+						Telerik.Windows.Controls.RadWindow.Alert("Generate L2TP VPN failed.");
+						IsBusy = false;
+						return;
+					}
+				}
+			}
+
 			EventAggregator.GetEvent<AddConfigurationEvent>().Publish(config);
-			environment.VPNConfigurations.Add(config);
+			environment.Configurations.Add(config);
 			await environment.Save();
 			IsBusy = false;
 		}
@@ -55,10 +91,13 @@ namespace ServerConfigurationShell.ViewModels
 		public ICommand CancelCommand { get; set; }
 
 		public string VPNName { get; set; }
+		public string IPAddress { get; set; }
+		public string PresharedKey { get; set; }
 		public string NetworkName { get; set; }
 		public string DNS { get; set; }
 		public string UserName { get; set; }
 		public string Password { get; set; }
+		public bool IsSonicVPN { get; set; }
 
 		private bool isBusy;
 

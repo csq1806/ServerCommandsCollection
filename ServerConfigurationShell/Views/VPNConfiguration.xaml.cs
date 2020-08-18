@@ -17,9 +17,9 @@ namespace ServerConfigurationShell.Views
 	/// <summary>
 	/// Interaction logic for Configuration.xaml
 	/// </summary>
-	public partial class Configuration : Window
+	public partial class VPNConfiguration : Window
 	{
-		public Configuration()
+		public VPNConfiguration()
 		{
 			InitializeComponent();
 		}

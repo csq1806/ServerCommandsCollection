@@ -7,37 +7,73 @@
         xmlns:converter="clr-namespace:ServerConfigurationShell.Converters"
         xmlns:temp="clr-namespace:ServerConfigurationShell.Templates"
         ResizeMode="CanMinimize"
-        Title="VPN" Height="320" Width="400">
+        Title="Remotefinder" Height="420" Width="720">
     <Window.Resources>
         <converter:Bool2ColorConverter x:Key="Bool2ColorConverter"/>
         <converter:Bool2SonicImageConverter x:Key="Bool2SonicImageConverter"/>
-        <DataTemplate x:Key="NormalContentTemplate">
+        <converter:Configuration2EnableConverter x:Key="Configuration2EnableConverter"/>
+        <DataTemplate x:Key="IconTemplate">
+            <Image Stretch="Fill" Width="16" Height="16" Source="{Binding}" />
+        </DataTemplate>
+        <DataTemplate x:Key="VPNContentTemplate">
             <Border BorderBrush="Black" Margin="5" BorderThickness="1" Width="12" CornerRadius="6" Background="{Binding IsConnected,Converter={StaticResource Bool2ColorConverter}}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="12"></Border>
         </DataTemplate>
         <DataTemplate x:Key="SonicContentTemplate">
             <Image Source="{Binding IsConnected,Converter={StaticResource Bool2SonicImageConverter}}" HorizontalAlignment="Center" VerticalAlignment="Center" Width="18"></Image>
         </DataTemplate>
-        <temp:ConnectedStatusTemplateSelector x:Key="ConnectedStatusTemplateSelector" NormalContentTemplate="{StaticResource NormalContentTemplate}" SonicContentTemplate="{StaticResource SonicContentTemplate}"></temp:ConnectedStatusTemplateSelector>
+        <DataTemplate x:Key="RDPContentTemplate">
+            <Image Source="/ServerConfigurationShell;component/assets/rdp.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="18"></Image>
+        </DataTemplate>
+        <temp:ConnectedStatusTemplateSelector x:Key="ConnectedStatusTemplateSelector" VPNContentTemplate="{StaticResource VPNContentTemplate}" SonicContentTemplate="{StaticResource SonicContentTemplate}" RDPContentTemplate="{StaticResource RDPContentTemplate}"></temp:ConnectedStatusTemplateSelector>
+        <DataTemplate x:Key="AssociatedVPNTemplate">
+            <StackPanel Orientation="Horizontal" Margin="60 5 0 5">
+                <TextBlock Text="Associated VPN: "></TextBlock>
+                <TextBlock Text="{Binding AssociatedVPNName}"></TextBlock>
+            </StackPanel>
+        </DataTemplate>
+        <temp:RowDetailTemplateSelector x:Key="RowDetailTemplateSelector" AssociatedVPNTemplate="{StaticResource AssociatedVPNTemplate}"></temp:RowDetailTemplateSelector>
     </Window.Resources>
     <telerik:RadBusyIndicator IsBusy="{Binding IsBusy}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <telerik:RadToolBar HorizontalAlignment="Stretch" IsOverflowOpen="False"  Margin="-1 -2 -1 0">
+            <telerik:RadMenu ClickToOpen="True">
+                <telerik:RadMenuItem Header="File">
+                    <telerik:RadMenuItem Header="Connect" Command="{Binding ConnectCommand}" IconTemplate="{StaticResource IconTemplate}" Icon="/ServerConfigurationShell;component/assets/connect.png"/>
+                    <telerik:RadMenuItem Header="Disconnect" Command="{Binding DisconnectCommand}" IconTemplate="{StaticResource IconTemplate}" Icon="/ServerConfigurationShell;component/assets/disconnect.png" IsEnabled="{Binding SelectedConfiguration.IsConnected}"/>
+                    <telerik:RadMenuSeparatorItem/>
+                    <telerik:RadMenuItem Header="Run CLI" Command="{Binding RunCLICommand}" IconTemplate="{StaticResource IconTemplate}" Icon="/ServerConfigurationShell;component/assets/cli.png"/>
+                </telerik:RadMenuItem>
+                <telerik:RadMenuItem Header="Options">
+                    <telerik:RadMenuItem Header="Configure VPN" Command="{Binding AddVPNConfigurationCommand}" IconTemplate="{StaticResource IconTemplate}" Icon="/ServerConfigurationShell;component/assets/vpn.png"/>
+                    <telerik:RadMenuItem Header="Configure RDP" Command="{Binding AddRDPConfigurationCommand}" IconTemplate="{StaticResource IconTemplate}" Icon="/ServerConfigurationShell;component/assets/rdp.png"/>
+                </telerik:RadMenuItem>
+                <telerik:RadMenuItem Header="Help">
+                    <telerik:RadMenuItem Header="About"/>
+                </telerik:RadMenuItem>
+            </telerik:RadMenu>
+            <telerik:RadToolBar Grid.Row="1" HorizontalAlignment="Stretch" IsOverflowOpen="False"  Margin="-1 -2 -1 0">
                 <telerik:RadButton Margin="2" Command="{Binding ConnectCommand}" ToolTip="Connect">
                     <Image Source="/ServerConfigurationShell;component/assets/connect.png" Width="16"></Image>
                 </telerik:RadButton>
-                <telerik:RadButton Margin="2" Command="{Binding DisconnectCommand}" ToolTip="Disconnect">
+                <telerik:RadButton Margin="2" Command="{Binding DisconnectCommand}" ToolTip="Disconnect" IsEnabled="{Binding SelectedConfiguration.IsConnected}">
                     <Image Source="/ServerConfigurationShell;component/assets/disconnect.png" Width="16"></Image>
                 </telerik:RadButton>
                 <telerik:RadToolBarSeparator />
-                <telerik:RadButton Margin="2" Command="{Binding AddConfigurationCommand}" ToolTip="Configure">
+                <telerik:RadSplitButton Margin="2" ToolTip="Configure" Command="{Binding AddVPNConfigurationCommand}">
                     <Image Source="/ServerConfigurationShell;component/assets/configuration.png" Width="16"></Image>
-                </telerik:RadButton>
+                    <telerik:RadSplitButton.DropDownContent>
+                        <telerik:RadContextMenu BorderThickness="0">
+                            <telerik:RadMenuItem Header="Configure VPN" Command="{Binding AddVPNConfigurationCommand}" IconTemplate="{StaticResource IconTemplate}" Icon="/ServerConfigurationShell;component/assets/vpn.png"></telerik:RadMenuItem>
+                            <telerik:RadMenuItem Header="Configure RDP" Command="{Binding AddRDPConfigurationCommand}" IconTemplate="{StaticResource IconTemplate}" Icon="/ServerConfigurationShell;component/assets/rdp.png"></telerik:RadMenuItem>
+                        </telerik:RadContextMenu>
+                    </telerik:RadSplitButton.DropDownContent>
+                </telerik:RadSplitButton>
             </telerik:RadToolBar>
-            <telerik:RadGridView Grid.Row="1" ActionOnLostFocus="None" CanUserDeleteRows="False" CanUserFreezeColumns="False" IsReadOnly="True" ShowGroupPanel="False" IsFilteringAllowed="False" RowIndicatorVisibility="Collapsed" CanUserResizeColumns="True" GroupRenderMode="Flat" AutoGenerateColumns="False" BorderThickness="0" ItemsSource="{Binding VPNConfigurations}" SelectedItem="{Binding SelectedConfiguration}">
+            <telerik:RadGridView x:Name="RadGridView1" Grid.Row="2" ActionOnLostFocus="None" CanUserDeleteRows="False" CanUserFreezeColumns="False" IsReadOnly="True" ShowGroupPanel="False" IsFilteringAllowed="False" RowIndicatorVisibility="Collapsed" CanUserResizeColumns="True" GroupRenderMode="Flat" AutoGenerateColumns="False" BorderThickness="0" AlternateRowBackground="LightBlue" AlternationCount="2" ItemsSource="{Binding VPNConfigurations}" SelectedItem="{Binding SelectedConfiguration}" RowDetailsVisibilityMode="Visible" RowDetailsTemplateSelector="{StaticResource RowDetailTemplateSelector}">
                 <telerik:RadGridView.Columns>
                     <telerik:GridViewColumn>
                         <telerik:GridViewColumn.CellTemplate>
@@ -47,11 +83,20 @@
                             </DataTemplate>
                         </telerik:GridViewColumn.CellTemplate>
                     </telerik:GridViewColumn>
-                    <telerik:GridViewDataColumn Header="VPN Name" DataMemberBinding="{Binding Name}"></telerik:GridViewDataColumn>
+                    <telerik:GridViewDataColumn Header="Type" IsVisible="False" DataMemberBinding="{Binding Type}"></telerik:GridViewDataColumn>
+                    <telerik:GridViewDataColumn Header="Name" DataMemberBinding="{Binding Name}"></telerik:GridViewDataColumn>
+                    <telerik:GridViewDataColumn Header="IP Address" DataMemberBinding="{Binding IPAddress}"></telerik:GridViewDataColumn>
                     <telerik:GridViewDataColumn Header="User Name" DataMemberBinding="{Binding UserName}"></telerik:GridViewDataColumn>
+                    <telerik:GridViewDataColumn Header="Domain" DataMemberBinding="{Binding Domain}"></telerik:GridViewDataColumn>
                     <telerik:GridViewDataColumn Header="Network Name" DataMemberBinding="{Binding NetworkName}" Width="*"></telerik:GridViewDataColumn>
                     <telerik:GridViewDataColumn Header="DNS" DataMemberBinding="{Binding DNS}" Width="80"></telerik:GridViewDataColumn>
                 </telerik:RadGridView.Columns>
+                <telerik:RadGridView.SortDescriptors>
+                    <telerik:ColumnSortDescriptor  Column="{Binding Columns[\Type\], ElementName=RadGridView1}"
+											   SortDirection="Descending" />
+                    <telerik:ColumnSortDescriptor  Column="{Binding Columns[\Name\], ElementName=RadGridView1}"
+											   SortDirection="Ascending" />
+                </telerik:RadGridView.SortDescriptors>
             </telerik:RadGridView>
         </Grid>
 

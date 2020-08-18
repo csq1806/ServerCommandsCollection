@@ -52,6 +52,15 @@
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.ServiceFabric.Internal, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=AMD64">
+      <HintPath>..\packages\Microsoft.ServiceFabric.7.1.456\lib\net472\Microsoft.ServiceFabric.Internal.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ServiceFabric.Internal.Strings, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=AMD64">
+      <HintPath>..\packages\Microsoft.ServiceFabric.7.1.456\lib\net472\Microsoft.ServiceFabric.Internal.Strings.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ServiceFabric.Preview, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=AMD64">
+      <HintPath>..\packages\Microsoft.ServiceFabric.7.1.456\lib\net472\Microsoft.ServiceFabric.Preview.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -67,6 +76,12 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Net.NetworkInformation, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Net.NetworkInformation.4.3.0\lib\net46\System.Net.NetworkInformation.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Reactive, Version=4.4.0.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Reactive.4.4.1\lib\net46\System.Reactive.dll</HintPath>
     </Reference>
@@ -128,17 +143,26 @@
     </ApplicationDefinition>
     <Compile Include="Converters\Bool2ColorConverter.cs" />
     <Compile Include="Converters\Bool2SonicImageConverter.cs" />
+    <Compile Include="Converters\Configuration2EnableConverter.cs" />
+    <Compile Include="Converters\ReverseBoolConverter.cs" />
     <Compile Include="Environment.cs" />
     <Compile Include="Events\AddConfigurationEvent.cs" />
     <Compile Include="Ex\LinqExtensions.cs" />
     <Compile Include="ModelBase.cs" />
+    <Compile Include="NetworkHelper.cs" />
     <Compile Include="Security.cs" />
     <Compile Include="Services\IService.cs" />
     <Compile Include="Templates\ConnectedStatusTemplateSelector.cs" />
+    <Compile Include="Templates\RowDetailTemplateSelector.cs" />
     <Compile Include="ViewModelBase.cs" />
-    <Compile Include="ViewModels\ConfigurationViewModel.cs" />
+    <Compile Include="ViewModels\RDPConfigurationViewModel.cs" />
+    <Compile Include="ViewModels\VPNConfigurationViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
-    <Page Include="Views\Configuration.xaml">
+    <Page Include="Views\RDPConfiguration.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\VPNConfiguration.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -150,8 +174,11 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Views\Configuration.xaml.cs">
-      <DependentUpon>Configuration.xaml</DependentUpon>
+    <Compile Include="Views\RDPConfiguration.xaml.cs">
+      <DependentUpon>RDPConfiguration.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\VPNConfiguration.xaml.cs">
+      <DependentUpon>VPNConfiguration.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -208,6 +235,15 @@
   <ItemGroup>
     <Resource Include="Assets\sonic-disconnect.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\cli.png" />
+    <Resource Include="Assets\file.png" />
+    <Resource Include="Assets\rdp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\vpn.png" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
