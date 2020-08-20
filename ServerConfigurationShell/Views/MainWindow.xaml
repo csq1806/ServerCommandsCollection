@@ -7,11 +7,12 @@
         xmlns:converter="clr-namespace:ServerConfigurationShell.Converters"
         xmlns:temp="clr-namespace:ServerConfigurationShell.Templates"
         ResizeMode="CanMinimize"
-        Title="Remotefinder" Height="420" Width="720">
+        Title="Remotefinder" Height="420" Width="820">
     <Window.Resources>
         <converter:Bool2ColorConverter x:Key="Bool2ColorConverter"/>
         <converter:Bool2SonicImageConverter x:Key="Bool2SonicImageConverter"/>
         <converter:Configuration2EnableConverter x:Key="Configuration2EnableConverter"/>
+        <converter:Type2VisibilityConverter x:Key="Type2VisibilityConverter"/>
         <DataTemplate x:Key="IconTemplate">
             <Image Stretch="Fill" Width="16" Height="16" Source="{Binding}" />
         </DataTemplate>
@@ -90,6 +91,20 @@
                     <telerik:GridViewDataColumn Header="Domain" DataMemberBinding="{Binding Domain}"></telerik:GridViewDataColumn>
                     <telerik:GridViewDataColumn Header="Network Name" DataMemberBinding="{Binding NetworkName}" Width="*"></telerik:GridViewDataColumn>
                     <telerik:GridViewDataColumn Header="DNS" DataMemberBinding="{Binding DNS}" Width="80"></telerik:GridViewDataColumn>
+                    <telerik:GridViewDataColumn DataMemberBinding="{Binding}" Width="90">
+                        <telerik:GridViewDataColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <telerik:RadButton Margin="8 0" ToolTip="Edit Configuration" Visibility="{Binding Type,Converter={StaticResource Type2VisibilityConverter}}" CommandParameter="{Binding}" Command="{Binding           DataContext.EditConfigurationCommand,RelativeSource={RelativeSource AncestorType=Window}}">
+                                        <Image Source="/ServerConfigurationShell;component/assets/edit.png" Width="16"></Image>
+                                    </telerik:RadButton>
+                                    <telerik:RadButton Margin="8 0" ToolTip="Delete Configuration" Visibility="{Binding Type,Converter={StaticResource Type2VisibilityConverter}}" CommandParameter="{Binding}" Command="{Binding           DataContext.DeleteConfigurationCommand,RelativeSource={RelativeSource AncestorType=Window}}">
+                                        <Image Source="/ServerConfigurationShell;component/assets/delete.png" Width="16"></Image>
+                                    </telerik:RadButton>
+                                </StackPanel>
+                            </DataTemplate>
+                        </telerik:GridViewDataColumn.CellTemplate>
+                    </telerik:GridViewDataColumn>
                 </telerik:RadGridView.Columns>
                 <telerik:RadGridView.SortDescriptors>
                     <telerik:ColumnSortDescriptor  Column="{Binding Columns[\Type\], ElementName=RadGridView1}"

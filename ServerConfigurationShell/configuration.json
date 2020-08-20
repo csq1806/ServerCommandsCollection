@@ -96,27 +96,39 @@
     "AssociatedVPNName": null
   },
   {
-    "Name": "VPN Shanghai Office",
-    "IPAddress": "116.228.152.46",
-    "PresharedKey": "transfinder2503",
-    "UserName": "transfinder_vpn",
-    "Password": "8OEzxhArevqSlleh7hZ1Jg==",
+    "Name": "Azure",
+    "IPAddress": "jeffreychen.cloudapp.net",
+    "PresharedKey": null,
+    "UserName": "JeffreyChen",
+    "Password": "PeCCr68yu0o9KjTN+FsSPw==",
     "NetworkName": null,
     "DNS": null,
-    "Domain": null,
-    "Type": 1,
+    "Domain": "JEFFREY",
+    "Type": 0,
     "AssociatedVPNName": null
   },
   {
-    "Name": "Office PC",
-    "IPAddress": "192.168.8.101",
+    "Name": "PLUS QA Server",
+    "IPAddress": "plusqa.dev.transfinder.com",
     "PresharedKey": null,
-    "UserName": "JeffreyChen",
-    "Password": "1GqrDIJUBMl3O/yJIimbAA==",
+    "UserName": "jchen",
+    "Password": "ykePp5rXHm9iOS+R4AW17w==",
+    "NetworkName": null,
+    "DNS": null,
+    "Domain": "DEV",
+    "Type": 0,
+    "AssociatedVPNName": "Transfinder VPN"
+  },
+  {
+    "Name": "Server.9",
+    "IPAddress": "192.168.8.9",
+    "PresharedKey": null,
+    "UserName": "tfshanghai",
+    "Password": "hyX6v1r6SFZO3pSxkhl3OK1/Sn2/FUnr",
     "NetworkName": null,
     "DNS": null,
     "Domain": null,
     "Type": 0,
-    "AssociatedVPNName": "VPN Shanghai Office"
+    "AssociatedVPNName": null
   }
 ]

@@ -3,6 +3,7 @@ using ServerConfigurationShell.Events;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -47,6 +48,7 @@ namespace ServerConfigurationShell.ViewModels
 		async private void OnSaveCommand()
 		{
 			IsBusy = true;
+			if (IsEdit) RemoveConfigurationByName(OriginalRDPName);
 			var config = new Configuration
 			{
 				Name = RDPName,
@@ -59,21 +61,108 @@ namespace ServerConfigurationShell.ViewModels
 			};
 			EventAggregator.GetEvent<AddConfigurationEvent>().Publish(config);
 			environment.Configurations.Add(config);
+			if (IsEdit) OriginalRDPName = RDPName;
 			await environment.Save();
 			IsBusy = false;
+			Telerik.Windows.Controls.RadWindow.Alert("Save succeed!");
+		}
+
+		private void RemoveConfigurationByName(string rdpName)
+		{
+			var config = environment.Configurations.FirstOrDefault(p => p.Name == rdpName);
+			if (config == null) return;
+			environment.Configurations.Remove(config);
+			EventAggregator.GetEvent<RemoveConfigurationEvent>().Publish(rdpName);
+
+			var rdpFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "rdps", $"{rdpName}.rdp");
+			if (File.Exists(rdpFilePath)) File.Delete(rdpFilePath);
 		}
 
 		public ICommand SaveCommand { get; set; }
 		public ICommand CancelCommand { get; set; }
 
-		public string RDPName { get; set; }
-		public string IPAddress { get; set; }
-		public string UserName { get; set; }
-		public string Password { get; set; }
-		public string Domain { get; set; }
+		public void SetConfigurationValue(Configuration configuration, bool isEdit)
+		{
+			this.IsEdit = isEdit;
+			OriginalRDPName = RDPName = configuration.Name;
+			IPAddress = configuration.IPAddress;
+			UserName = configuration.UserName;
+			Password = Security.Decrypt(configuration.Password);
+			Domain = configuration.Domain;
+			SelectedAssociatedVPN = AvailableVPNs.FirstOrDefault(p => p.Name == (configuration.AssociatedVPNName ?? "None"));
+		}
+
+		public bool IsEdit { get; set; }
+		public string OriginalRDPName { get; set; }
+
+		private string rdpName;
+
+		public string RDPName
+		{
+			get { return rdpName; }
+			set
+			{
+				rdpName = value;
+				OnPropertyChanged();
+			}
+		}
+		private string ipAddress;
+
+		public string IPAddress
+		{
+			get { return ipAddress; }
+			set
+			{
+				ipAddress = value;
+				OnPropertyChanged();
+			}
+		}
+		private string userName;
+
+		public string UserName
+		{
+			get { return userName; }
+			set
+			{
+				userName = value;
+				OnPropertyChanged();
+			}
+		}
+		private string password;
+
+		public string Password
+		{
+			get { return password; }
+			set
+			{
+				password = value;
+				OnPropertyChanged();
+			}
+		}
+		private string domain;
+
+		public string Domain
+		{
+			get { return domain; }
+			set
+			{
+				domain = value;
+				OnPropertyChanged();
+			}
+		}
 
 		public ObservableCollection<Configuration> AvailableVPNs { get; set; }
-		public Configuration SelectedAssociatedVPN { get; set; }
+		private Configuration selectedAssociatedVPN;
+
+		public Configuration SelectedAssociatedVPN
+		{
+			get { return selectedAssociatedVPN; }
+			set
+			{
+				selectedAssociatedVPN = value;
+				OnPropertyChanged();
+			}
+		}
 
 		private bool isBusy;
 

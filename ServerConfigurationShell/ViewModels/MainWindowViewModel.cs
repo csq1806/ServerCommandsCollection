@@ -36,10 +36,52 @@ namespace ServerConfigurationShell.ViewModels
 			RunCLICommand = new DelegateCommand(OnRunCLICommand);
 			AddVPNConfigurationCommand = new DelegateCommand(OnAddVPNConfigurationCommand);
 			AddRDPConfigurationCommand = new DelegateCommand(OnAddRDPConfigurationCommand);
+			EditConfigurationCommand = new DelegateCommand<Configuration>(OnEditConfigurationCommand);
+			DeleteConfigurationCommand = new DelegateCommand<Configuration>(OnDeleteConfigurationCommand);
 
 			EventAggregator.GetEvent<AddConfigurationEvent>().Subscribe(OnAddingConfiguration);
+			EventAggregator.GetEvent<RemoveConfigurationEvent>().Subscribe(OnRemovingConfiguration);
 
 			Task.Run(MonitorVPNStatus);
+		}
+
+		private void OnRemovingConfiguration(string name)
+		{
+			var configuration = VPNConfigurations.FirstOrDefault(p => p.Name == name);
+			if (configuration != null) vpnConfigurations.Remove(configuration);
+		}
+
+		private void OnDeleteConfigurationCommand(Configuration configuration)
+		{
+			Telerik.Windows.Controls.RadWindow.Confirm($"Do you really want to delete {configuration.Name}? This operation is permanent.", async (s, e) =>
+			  {
+				  if (e.DialogResult ?? false)
+				  {
+					  IsBusy = true;
+					  environment.Configurations.Remove(configuration);
+					  VPNConfigurations.Remove(configuration);
+					  await environment.Save();
+					  IsBusy = false;
+				  }
+			  });
+		}
+
+		private void OnEditConfigurationCommand(Configuration configuration)
+		{
+			if (configuration.Type == ConfigurationType.Remote)
+			{
+				var viewModel = Container.Resolve<RDPConfigurationViewModel>();
+				viewModel.SetConfigurationValue(configuration, isEdit: true);
+				viewModel.ShowDialogWindow();
+			}
+			else
+			{
+				Telerik.Windows.Controls.RadWindow.Alert("Delete VPN has not implemented yet. Please wait for the next release.");
+				return;
+				var viewModel = Container.Resolve<VPNConfigurationViewModel>();
+				viewModel.SetConfigurationValue(configuration, isEdit: true);
+				viewModel.ShowDialogWindow();
+			}
 		}
 
 		private void OnRunCLICommand()
@@ -317,6 +359,8 @@ namespace ServerConfigurationShell.ViewModels
 		public ICommand RunCLICommand { get; set; }
 		public ICommand AddVPNConfigurationCommand { get; set; }
 		public ICommand AddRDPConfigurationCommand { get; set; }
+		public ICommand EditConfigurationCommand { get; set; }
+		public ICommand DeleteConfigurationCommand { get; set; }
 
 		private ObservableCollection<Configuration> vpnConfigurations;
 

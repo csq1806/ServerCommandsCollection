@@ -145,8 +145,10 @@
     <Compile Include="Converters\Bool2SonicImageConverter.cs" />
     <Compile Include="Converters\Configuration2EnableConverter.cs" />
     <Compile Include="Converters\ReverseBoolConverter.cs" />
+    <Compile Include="Converters\Type2VisibilityConverter.cs" />
     <Compile Include="Environment.cs" />
     <Compile Include="Events\AddConfigurationEvent.cs" />
+    <Compile Include="Events\RemoveConfigurationEvent.cs" />
     <Compile Include="Ex\LinqExtensions.cs" />
     <Compile Include="ModelBase.cs" />
     <Compile Include="NetworkHelper.cs" />
@@ -243,7 +245,10 @@
   <ItemGroup>
     <Resource Include="Assets\vpn.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Assets\delete.png" />
+    <Resource Include="Assets\edit.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

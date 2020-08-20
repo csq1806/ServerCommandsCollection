@@ -85,19 +85,115 @@ namespace ServerConfigurationShell.ViewModels
 			environment.Configurations.Add(config);
 			await environment.Save();
 			IsBusy = false;
+			Telerik.Windows.Controls.RadWindow.Alert("Save succeed!");
 		}
 
 		public ICommand SaveCommand { get; set; }
 		public ICommand CancelCommand { get; set; }
 
-		public string VPNName { get; set; }
-		public string IPAddress { get; set; }
-		public string PresharedKey { get; set; }
-		public string NetworkName { get; set; }
-		public string DNS { get; set; }
-		public string UserName { get; set; }
-		public string Password { get; set; }
-		public bool IsSonicVPN { get; set; }
+		public void SetConfigurationValue(Configuration configuration, bool isEdit)
+		{
+			this.IsEdit = isEdit;
+			OriginalVPNName = VPNName = configuration.Name;
+			IPAddress = configuration.IPAddress;
+			UserName = configuration.UserName;
+			PresharedKey = configuration.PresharedKey;
+			NetworkName = configuration.NetworkName;
+			DNS = configuration.DNS;
+			IsSonicVPN = configuration.Type == ConfigurationType.SonicWallVPN;
+			Password = Security.Decrypt(configuration.Password);
+		}
+		public bool IsEdit { get; set; }
+		public string OriginalVPNName { get; private set; }
+
+		private string vpnName;
+
+		public string VPNName
+		{
+			get { return vpnName; }
+			set
+			{
+				vpnName = value;
+				OnPropertyChanged();
+			}
+		}
+		private string ipAddress;
+
+		public string IPAddress
+		{
+			get { return ipAddress; }
+			set
+			{
+				ipAddress = value;
+				OnPropertyChanged();
+			}
+		}
+		private string userName;
+
+		public string UserName
+		{
+			get { return userName; }
+			set
+			{
+				userName = value;
+				OnPropertyChanged();
+			}
+		}
+		private string password;
+
+		public string Password
+		{
+			get { return password; }
+			set
+			{
+				password = value;
+				OnPropertyChanged();
+			}
+		}
+		private string presharedKey;
+
+		public string PresharedKey
+		{
+			get { return presharedKey; }
+			set
+			{
+				presharedKey = value;
+				OnPropertyChanged();
+			}
+		}
+		private string networkName;
+
+		public string NetworkName
+		{
+			get { return networkName; }
+			set
+			{
+				networkName = value;
+				OnPropertyChanged();
+			}
+		}
+		private string dns;
+
+		public string DNS
+		{
+			get { return dns; }
+			set
+			{
+				dns = value;
+				OnPropertyChanged();
+			}
+		}
+		private bool isSonicVPN;
+
+		public bool IsSonicVPN
+		{
+			get { return isSonicVPN; }
+			set
+			{
+				isSonicVPN = value;
+				OnPropertyChanged();
+			}
+		}
 
 		private bool isBusy;
 
